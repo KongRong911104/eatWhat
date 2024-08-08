@@ -1,0 +1,41 @@
+#app {
+  margin: 0;
+  height: 100%;
+  font-weight: normal;
+  background-color: #F4F4F4;
+  font-family: "Microsoft JhengHei", PingFang, STHeiti, sans-serif, serif;
+}
+html, body {
+  margin: 0;
+  height: 100%;
+}
+.info {
+  display: flex;
+  width: 300px;
+  justify-content: space-between;
+  font-size: 20px;
+  padding-top: 10px;
+  text-align: center;
+
+}
+/* 整個網頁適用的水平滾動條樣式 */
+::-webkit-scrollbar {
+  height: 8px; /* 滾動條的高度 */
+}
+
+/* 滾動條軌道 */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* 滾動條軌道的背景顏色 */
+  border-radius: 10px; /* 圓角 */
+}
+
+/* 滾動條滑塊 */
+::-webkit-scrollbar-thumb {
+  background: #888; /* 滾動條滑塊的顏色 */
+  border-radius: 10px; /* 圓角 */
+}
+
+/* 滾動條滑塊在懸停時的顏色 */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* 滾動條滑塊懸停時的顏色 */
+}
