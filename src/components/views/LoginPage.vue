@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onBeforeMount, onMounted } from "vue";
+import axios from 'axios';
 import { useRouter } from "vue-router";
 import { type UserInter } from "@/types";
 const router = useRouter();
@@ -22,18 +23,18 @@ watch(user, () => {
         inputOkFlag.value = false;
     }
 }, { deep: true })
-import { io } from 'socket.io-client';
-const socket = io('http://localhost:5000');
-function sendData() {
-    if (user.value.name != "" && user.value.room != "") {
-        localStorage.setItem('username', user.value.name);
-        localStorage.setItem('room', user.value.room);
-        router.push({ name: 'Room', params: { room: String(user.value.room) } })
-    }
-    else{
-        alert("請輸入暱稱或房號")
-    }
-}
+// import { io } from 'socket.io-client';
+// const socket = io('http://localhost:5000');
+// function sendData() {
+//     if (user.value.name != "" && user.value.room != "") {
+//         localStorage.setItem('username', user.value.name);
+//         localStorage.setItem('room', user.value.room);
+//         router.push({ name: 'Room', params: { room: String(user.value.room) } })
+//     }
+//     else{
+//         alert("請輸入暱稱或房號")
+//     }
+// }
 const myButton = ref<HTMLButtonElement | null>(null);
 onMounted(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -44,8 +45,23 @@ function handleKeyDown(event: KeyboardEvent) {
         myButton.value?.click();
     }
 }
-
-
+const createRoomAndJoin = async () => {
+  try {
+    const response = await axios.post('http://140.128.101.24:8080/get_room_id');
+    const roomId = response.data;
+    localStorage.setItem('username', user.value.name);
+    localStorage.setItem('room', roomId);
+    router.push({ name: 'Room', params: { room: String(roomId) } })
+    
+  } catch (error) {
+    console.error('Error creating room:', error);
+  }
+};
+const joinRoom = async () => {
+    localStorage.setItem('username', user.value.name);
+    localStorage.setItem('room', user.value.room);
+    router.push({ name: 'Room', params: { room: String(user.value.room) } })
+}
 </script>
 
 <template>
@@ -65,9 +81,9 @@ function handleKeyDown(event: KeyboardEvent) {
                 <hr />
                 or
                 <hr />
-                <button class="create-room-btn">創建房間</button>
+                <button class="create-room-btn" @click="createRoomAndJoin">創建房間</button>
             </div>
-            <button ref="myButton" v-if="inputOkFlag" class="login-btn" @click="sendData"><i
+            <button ref="myButton" v-if="inputOkFlag" class="login-btn" @click="joinRoom"><i
                     class="bi bi-arrow-right"></i></button>
         </div>
     </div>

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, provide, inject } from 'vue';
+// import { io } from 'socket.io-client';
+// const socket = io('http://140.128.101.24:8080');
 const voteFlag: any = inject('voteFlag')
 const orders: any = inject('orders')
 const newOrder: any = inject('newOrder')
@@ -24,6 +26,7 @@ const vote = (isAgree: boolean) => {
             people.value[voteOkCount.value] = '#a4e2cf'; // 同意顏色
             voteOkCount.value++;
             clickNo.value = false;
+            socket.emit('vote', {  is_agree: true  });
             if (voteOkCount.value == people.value.length) {
                 finished.value = true;
             }
@@ -31,7 +34,8 @@ const vote = (isAgree: boolean) => {
             people.value[voteNoCount.value] = '#e2aba4'; // 不同意顏色
             voteNoCount.value--;
             clickOk.value = false;
-            // 這裡接後端
+            
+            socket.emit('vote', {  is_agree: false  });
             newOrder.value.oppo += (localStorage.getItem('username')) + " ";
         }
         hasVoted.value = true;

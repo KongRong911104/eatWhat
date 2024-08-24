@@ -15,12 +15,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  server: {
-    proxy: {
-      '/socket.io': {
-        target: 'http://localhost:5000',
-        ws: true
-      }
-    }
-  }
+  // server: {
+  //   proxy: {
+  //     '/socket.io': {
+  //       target: 'ws://140.18.101.24:8080/63119',
+  //       ws: true
+  //     }
+  //   }
+  // }
 })

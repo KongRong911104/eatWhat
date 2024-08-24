@@ -5,37 +5,36 @@ import voteView from "../voteView.vue"
 import { ref, provide, watch, onMounted, nextTick, onUnmounted } from "vue"
 import { io } from 'socket.io-client';
 import { useRoute } from 'vue-router';
-
-const socket = io('http://localhost:5000'); // 确保这个 URL 指向你的后端服务器地址
 const route = useRoute();
 const room = ref(route.params.room);
+const user: string|null = localStorage.getItem('username');
 const users = ref([]);
-
+let ws : WebSocket ;
 const updateRoomUsers = (roomUsers: any) => {
-    users.value = roomUsers;
+    users.value = roomUsers.length;
 };
+function joinRoom(name:String, roomId:String) {
+    ws = new WebSocket(`ws://140.128.101.24:8080/${roomId}`);
 
+    ws.onopen = function () {
+        console.log("Connected to the WebSocket server.");
+        ws.send(JSON.stringify({ type: "join", name: name }));
+    };
+
+    ws.onclose = function () {
+        console.log("Disconnected from the WebSocket server.");
+    };
+
+    ws.onerror = function (error) {
+        console.error("WebSocket error: ", error);
+    };
+}
 onMounted(() => {
-    if (!socket.connected) {
-       socket.connect();
-    }
-    socket.emit('join-room', {  room: String(room.value)  });
-
-    socket.on('room-users', updateRoomUsers);
-
-    socket.on('disconnect', () => {
-        users.value = [];
-    });
-});
-socket.on('order-notification', (data) => {
-    if (data.room === room.value) {
-        newOrder.value = data.shop_info; 
-        voteFlag.value = true;
+    if (user && room.value) {
+        return joinRoom(user as string, room.value as string);
     }
 });
 onUnmounted(() => {
-    socket.emit('leave-room', { room: room.value });
-    socket.off('room-users', updateRoomUsers);
 });
 const finished = ref(false);
 const shop_info = ref([])
@@ -63,6 +62,7 @@ const newOrder = ref({
     oppo: ""
 })
 const voteFlag = ref(false);
+provide("ws",ws)
 provide("room", room)
 provide("voteFlag", voteFlag)
 provide("newOrder", newOrder)
